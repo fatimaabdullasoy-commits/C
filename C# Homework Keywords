@@ -1,0 +1,497 @@
+class Animal
+{
+
+    public string Nickname { get; set; }
+
+    public int Age { get; set; }
+
+    public string Gender { get; set; }
+
+    public int Energy { get; set; }
+
+    public double Price { get; set; }
+
+    public int MealQuantity { get; set; }
+
+
+
+    public Animal(
+        string nickname,
+        int age,
+        string gender,
+        int energy,
+        double price
+    )
+    {
+        Nickname = nickname;
+
+        Age = age;
+
+        Gender = gender;
+
+        Energy = energy;
+
+        Price = price;
+
+        MealQuantity = 0;
+    }
+
+
+
+
+    public void Eat()
+    {
+        Console.WriteLine( Nickname + " is eating" );
+
+        Energy += 20;
+
+        MealQuantity++;
+
+        Price += 5;
+
+        Age += 1;
+
+        if (Energy > 100)
+        {
+            Energy = 100;
+        }
+
+        Console.WriteLine( "Energy: " + Energy );
+    }
+
+
+
+    public void Sleep()
+    {
+        Console.WriteLine( Nickname + " is sleeping" );
+
+        Energy += 40;
+
+        if (Energy > 100)
+        {
+            Energy = 100;
+        }
+
+        Console.WriteLine( "Energy restored: " +Energy );
+    }
+
+
+
+
+    public void Play()
+    {
+        Console.WriteLine( Nickname + " started playing" );
+
+        Energy -= 30;
+
+        if (Energy < 0)
+        {
+            Energy = 0;
+        }
+
+        Console.WriteLine( "Energy left: " + Energy);
+
+
+
+        if (Energy == 0)
+        {
+            Console.WriteLine( Nickname + " is too tired" );
+
+            Sleep();
+        }
+    }
+
+
+
+
+    public void Show()
+    {
+        Console.WriteLine();
+
+        Console.WriteLine( "Nickname: " + Nickname );
+
+        Console.WriteLine( "Age: " + Age );
+
+        Console.WriteLine( "Gender: " + Gender );
+
+        Console.WriteLine( "Energy: " + Energy );
+
+        Console.WriteLine( "Price: " + Price );
+
+        Console.WriteLine( "Meal Count: " + MealQuantity );
+
+        Console.WriteLine();
+    }
+}
+
+
+
+class Cat : Animal
+{
+    public Cat(
+        string n,
+        int a,
+        string g,
+        int e,
+        double p
+    )
+    :
+    base(
+        n,
+        a,
+        g,
+        e,
+        p
+    )
+    {
+
+    }
+}
+
+
+
+class Dog : Animal
+{
+    public Dog(
+        string n,
+        int a,
+        string g,
+        int e,
+        double p
+    )
+    :
+    base(
+        n,
+        a,
+        g,
+        e,
+        p
+    )
+    {
+
+    }
+}
+
+
+
+class Bird : Animal
+{
+    public Bird(
+        string n,
+        int a,
+        string g,
+        int e,
+        double p
+    )
+    :
+    base(
+        n,
+        a,
+        g,
+        e,
+        p
+    )
+    {
+
+    }
+}
+
+
+
+class Fish : Animal
+{
+    public Fish(
+        string n,
+        int a,
+        string g,
+        int e,
+        double p
+    )
+    :
+    base(
+        n,
+        a,
+        g,
+        e,
+        p
+    )
+    {
+
+    }
+}
+
+
+
+// biredn cox pisik saxlamaq ucun List istifade etdim.
+// sonradan rahatliqla elave ve silmek ede bilim deye.
+class PetShop
+{
+    public List<Cat> Cats =
+        new List<Cat>();
+
+    public List<Dog> Dogs =
+        new List<Dog>();
+
+    public List<Bird> Birds =
+        new List<Bird>();
+
+    public List<Fish> Fishes =
+        new List<Fish>();
+
+
+
+    public void RemoveByNickName(
+        string nickname
+    )
+    {
+        Cats.RemoveAll( x => x.Nickname == nickname );
+
+        Dogs.RemoveAll( x => x.Nickname == nickname );
+
+        Birds.RemoveAll( x => x.Nickname == nickname );
+
+        Fishes.RemoveAll( x => x.Nickname == nickname );
+
+        Console.WriteLine( nickname + " removed" );
+    }
+
+
+// foreach istifade etdim bu hissede cunki siyahidaki
+// butun elementlerin uzerinden kecmek lazimdir.
+    public int TotalMeals()
+    {
+        int total = 0;
+
+        foreach (
+            var cat
+            in Cats
+        )
+        {
+            total +=
+                cat.MealQuantity;
+        }
+
+        foreach (
+            var dog
+            in Dogs
+        )
+        {
+            total +=
+                dog.MealQuantity;
+        }
+
+        foreach (
+            var bird
+            in Birds
+        )
+        {
+            total +=
+                bird.MealQuantity;
+        }
+
+        foreach (
+            var fish
+            in Fishes
+        )
+        {
+            total +=
+                fish.MealQuantity;
+        }
+
+        return total;
+    }
+
+
+
+
+    public double TotalPrice()
+    {
+        double total = 0;
+
+        foreach (
+            var cat
+            in Cats
+        )
+        {
+            total +=
+                cat.Price;
+        }
+
+        foreach (
+            var dog
+            in Dogs
+        )
+        {
+            total +=
+                dog.Price;
+        }
+
+        foreach (
+            var bird
+            in Birds
+        )
+        {
+            total +=
+                bird.Price;
+        }
+
+        foreach (
+            var fish
+            in Fishes
+        )
+        {
+            total +=
+                fish.Price;
+        }
+
+        return total;
+    }
+
+
+
+    public void ShowAll()
+    {
+        foreach (
+            var cat
+            in Cats
+        )
+        {
+            cat.Show();
+        }
+
+        foreach (
+            var dog
+            in Dogs
+        )
+        {
+            dog.Show();
+        }
+
+        foreach (
+            var bird
+            in Birds
+        )
+        {
+            bird.Show();
+        }
+
+        foreach (
+            var fish
+            in Fishes
+        )
+        {
+            fish.Show();
+        }
+    }
+}
+
+
+
+
+class Program
+{
+    static void Main()
+    {
+        PetShop shop =
+            new PetShop();
+
+
+
+        Cat c1 =
+            new Cat(
+                "Tom",
+                2,
+                "Male",
+                100,
+                50
+            );
+
+
+
+        Dog d1 =
+            new Dog(
+                "Max",
+                4,
+                "Male",
+                90,
+                80
+            );
+
+
+
+        Bird b1 =
+            new Bird(
+                "Rio",
+                1,
+                "Female",
+                70,
+                40
+            );
+
+
+
+        Fish f1 =
+            new Fish(
+                "Nemo",
+                1,
+                "Male",
+                60,
+                20
+            );
+
+
+
+
+        shop.Cats.Add(c1);
+
+        shop.Dogs.Add(d1);
+
+        shop.Birds.Add(b1);
+
+        shop.Fishes.Add(f1);
+
+
+        c1.Play();
+
+        c1.Play();
+
+        c1.Eat();
+
+        d1.Eat();
+
+        d1.Play();
+
+        b1.Sleep();
+
+        f1.Eat();
+
+
+
+
+        Console.WriteLine();
+
+        Console.WriteLine( "TOTAL MEALS: " + shop.TotalMeals() );
+
+
+
+        Console.WriteLine( "TOTAL PRICE: " + shop.TotalPrice() );
+
+
+
+        Console.WriteLine();
+
+        shop.ShowAll();
+
+
+
+        shop.RemoveByNickName(
+            "Tom"
+        );
+
+
+
+        Console.ReadKey();
+    }
+}
+
+

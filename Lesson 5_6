@@ -1,0 +1,221 @@
+//Task:
+
+//Konsolda 10 sualdan ibaret imtahan yazmaginiz teleb olunur. 
+//1.  Proqramda statik olaraq 10 sual ve her sualin 3 cavabi olacaq.
+
+//2.  Her defe proqrami basladan zaman variantlarda olan cavablar random deyismelidir. Meselen:
+//	Proqrami 1-ci defe isedusen zaman sualin cavabi 
+//	a) Baki
+//    b) Gence
+//    c) Naxcivan
+//    Proqrami 2-ci defe isedusen zaman sualin cavabi
+//	a) Gence
+//    b) Naxcivan
+//    c) Baki
+//    Proqram bu qaydada her defe cavablari qarisdirmalidir.
+
+//3.  Butun suallar ilk defeden acilmir bir suala cavab verennen sonra o biri sual acilir.
+
+//4.  Istifadeci suala cavab vermek ucun sadece varianti secmelidir(Sualin cavabini konsolda yazmamalidir).
+
+//5.Duzgun cavab verilende hemen sual yasil rengde olsun, sehv cavabda qirmizi rengde.
+
+//6.  Her duzgun suala gore user 10 xal qazanir her verdiyi cavaba gore 10 xal cixilir. Xal eger menfi olursa o zaman 0 xal gostersin yeni menfi xal olmasin. Proqramin sonunda yazilsin ki, imtahan bitmisdir siz filan qeder xal toplamisiniz.
+
+//7.  Proqrami yazmaq ucun siz sadece funksiya, ve arraydan istifade elemelisiniz.
+
+// List ve ozunuzden class yaradib istifade elemek olmaz.
+//Note: 
+//	Random reqem istifade elemek ucun:
+//	Random rand = new Random();
+//int number = rand.Next(0, 99); // hansi araliqda random reqem vermesinizi istiyirsinize 0 99 u istediyiniz araliqla deyisin.
+//Konsoldaki yazilarin rengini nece deyiseceyinizi bu linkden baxib oyrene bilersiniz:
+
+
+
+
+
+//___________________________________________________________________________________________________________
+
+
+
+
+//arashdirme up ve dpwn duymesi, console yazilarin rengleri, shuffle random answerlerin deyishmesi
+
+using System;
+
+class Program
+{
+    static Random random = new Random();
+
+    static void Main()
+    {
+        string[] questions =
+        {
+            "What is the capital of Azerbaijan?",
+            "2 + 2 = ?",
+            "Which planet is known as the Red Planet?",
+            "Which language is used in C# projects?",
+            "How many days are in a week?",
+            "Largest ocean?",
+            "King of the Jungle?",
+            "Sky color on a clear day?",
+            "How many months in a year?",
+            "Which season comes after summer?"
+        };
+
+        string[,] answers =
+        {
+            {"Baku", "Ganja", "Nakhchivan"},
+            {"4", "5", "6"},
+            {"Mars", "Earth", "Venus"},
+            {"C#", "HTML", "CSS"},
+            {"7", "5", "10"},
+            {"Pacific", "Atlantic", "Indian"},
+            {"Lion", "Tiger", "Cat"},
+            {"Blue", "Green", "Red"},
+            {"12", "10", "8"},
+            {"Autumn", "Winter", "Spring"}
+        };
+
+        int[] correctIndexes =
+        {
+            0,0,0,0,0,0,0,0,0,0
+        };
+
+        int score = 0;
+
+        for (int i = 0; i < questions.Length; i++)
+        {
+            bool result = AskQuestion(
+                questions[i],
+                answers,
+                correctIndexes[i],
+                i
+            );
+
+            if (result)
+            {
+                score += 10;
+            }
+
+            Console.WriteLine("press any key on the pad for the next question");
+            Console.ReadKey();
+        }
+
+        Console.Clear();
+
+        // test answers gostarilir,amma ferqli rengler ile
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Exam Finished!");
+        Console.WriteLine($"Your Score: {score}");
+        Console.ResetColor();
+
+        Console.ReadKey();
+    }
+
+    static bool AskQuestion(
+        string question,
+        string[,] allAnswers,
+        int correctIndex,
+        int questionIndex)
+    {
+        string[] options = new string[3];
+
+        for (int i = 0; i < 3; i++)
+        {
+            options[i] = allAnswers[questionIndex, i];
+        }
+
+        string correctAnswer = options[correctIndex];
+
+        Shuffle(options);
+
+        int selectedIndex = 0;
+
+        while (true)
+        {
+            Console.Clear();
+
+            Console.WriteLine(question);
+            Console.WriteLine();
+            Console.WriteLine("Use up or down and enter for chosing the answers");
+            Console.WriteLine();
+
+            for (int i = 0; i < options.Length; i++)
+            {
+                if (i == selectedIndex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("> " + options[i]);
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("  " + options[i]);
+                }
+            }
+
+            // klaviaturadan duyme oxunur
+            ConsoleKeyInfo key = Console.ReadKey(true);
+
+            // yuxari ox duymesi
+            if (key.Key == ConsoleKey.UpArrow)
+            {
+                selectedIndex--;
+
+                if (selectedIndex < 0)
+                {
+                    selectedIndex = options.Length - 1;
+                }
+            }
+            // asagi ox duymesi
+            else if (key.Key == ConsoleKey.DownArrow)
+            {
+                selectedIndex++;
+
+                if (selectedIndex >= options.Length)
+                {
+                    selectedIndex = 0;
+                }
+            }
+            // enter duymesi
+            else if (key.Key == ConsoleKey.Enter)
+            {
+                bool isCorrect =
+                    options[selectedIndex] == correctAnswer;
+
+                Console.WriteLine();
+
+                if (isCorrect)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Correct Answer!");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Wrong Answer!");
+                    Console.WriteLine("Correct Answer: " + correctAnswer);
+                }
+
+                Console.ResetColor();
+
+                return isCorrect;
+            }
+        }
+    }
+
+    // variantlar random deyishir
+    static void Shuffle(string[] array)
+    {
+        for (int i = 0; i < array.Length; i++)
+        {
+            int randomIndex = random.Next(array.Length);
+
+            string temp = array[i];
+            array[i] = array[randomIndex];
+            array[randomIndex] = temp;
+        }
+    }
+}

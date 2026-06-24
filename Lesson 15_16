@@ -1,0 +1,297 @@
+//Bank
+
+using System;
+using System.Collections.Generic;
+
+namespace HelloWorld
+{
+    //Bank=>NAME, BUDGET, PROFIT, CALCULATE_PROFIT), CEO, WORKER[], MANAGER[], CLIENT[], showClientCredit(string fullname), payCredit (Client, money), showAllCredit
+    class BANK
+    {
+        public string Name { get; set; }
+        public decimal Budget { get; set; }
+        public decimal Profit { get; set; }
+        public CEO Ceo { get; set; }
+
+        public List<WORKER> Workers { get; set; } = new();
+
+        public List<MANAGER> Managers { get; set; } = new();
+
+        public List<CLIENT> Clients { get; set; } = new();
+
+        public List<CREDIT> Credits { get; set; } = new();
+
+        public decimal CalculateProfit()
+        {
+            decimal totalSalaries = 0;
+
+            foreach (var worker in Workers)
+            {
+                totalSalaries += worker.Salary;
+            }
+
+            foreach (var manager in Managers)
+            {
+                totalSalaries += manager.Salary;
+            }
+
+            totalSalaries += Ceo.Salary;
+
+            Profit = Budget - totalSalaries;
+
+            return Profit;
+        }
+
+        public void ShowClientCredit(string fullname)
+        {
+            foreach(var credit in Credits)
+            {
+                string clientFullName = credit.Client.Name + " " + credit.Client.Surname;
+
+                if (clientFullName == fullname)
+                {
+                    Console.WriteLine($"{clientFullName} credit amount:{credit.Amount}");
+                }
+            }
+        }
+
+        public void PayCredit(CLIENT client, decimal money)
+        {
+            foreach (var credit in Credits)
+            {
+                if (credit.Client == client)
+                {
+                    credit.Amount -= money;
+                    Budget += money;
+                      
+                    Console.WriteLine($"{client.Name} paid {money} AZN.");
+                    Console.WriteLine($"Remaining debt: {credit.Amount} AZN.");
+
+                    return;
+                }
+            }
+
+            Console.WriteLine("Credit not found.");
+        }
+
+        public void ShowAllCredit()
+        {
+            foreach (var credit in Credits)
+            {
+                Console.WriteLine(
+                    $"{credit.Client.Name} {credit.Client.Surname} - {credit.Amount} AZN"
+                );
+            }
+        }
+    }
+
+
+    //CEO => GUID, name, surname, age, position, salary, control(), organize(), makeMeeting(), decreasePercentage(percent)
+    class CEO
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public int Age { get; set; }
+        public string Position { get; set; }
+        public decimal Salary { get; set; }
+
+        public void Control()
+        {
+            Console.WriteLine($"{Name} {Surname} is controlling the bank.");
+        }
+        public void Organize()
+        {
+            Console.WriteLine($"{Name} {Surname} is organized the work process.");
+        }
+        public void MakeMeeting()
+        {
+            Console.WriteLine($"{Name} {Surname} called a meeting.");
+        }
+        public void DecreasePercentage(double percent)
+        {
+            Console.WriteLine($"Credit percentage decreased by {percent}%.");
+        }
+    }
+
+    //WORKER=>GUID, name, surname, age, position, salary, startTime, endTime (ishe bashlama bitme vaxti) , Operations ([]), addOperation
+    class WORKER
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public int Age { get; set; }
+        public string Position { get; set; }
+        public decimal Salary { get; set; }
+
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+
+        public List<OPERATION> Operations { get; set; } = new();
+
+        public void AddOperation(OPERATION operation)
+        {
+            Operations.Add(operation);
+        }
+    }
+
+    //Manager => GUID, name, surname, age, position, salary, organize(), calculatesalaries()
+    class MANAGER 
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public int Age { get; set; }
+        public string Position { get; set; }
+        public decimal Salary { get; set; }
+
+        public void organize()
+        {
+            Console.WriteLine($"{Name} {Surname} organized the work process.");
+        }
+
+        public decimal CalculateSalaries(List<WORKER> workers)
+        {
+            decimal totalSalary = 0;
+
+            foreach (var worker in workers)
+            {
+                totalSalary += worker.Salary;
+            }
+
+            return totalSalary;
+        }
+    }
+
+    //Operation => GUID, process_name(meselen kredit emeliyyati), datetime
+    class OPERATION
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public string ProcessName { get; set; }
+
+        public DateTime OperationDate { get; set; }
+    }
+
+    //Credit => GUID, Client, amount, percent, months, calculatePercent, payment)
+    class CREDIT
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public CLIENT Client { get; set; }
+        public decimal Amount { get; set; }
+        public double Percent { get; set; }
+        public int Months { get; set; }
+
+        public decimal CalculatePercent()
+        {
+            return Amount * (decimal)(Percent / 100);
+        }
+
+        public decimal Payment()
+        {
+            if (Months == 0)
+                return 0;
+
+            decimal total = Amount + CalculatePercent();
+            return total / Months;
+        }
+
+    }
+
+    //Client=>GUID, name, surname, age, live_address, work_address, salary
+    class CLIENT
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public int Age { get; set; }
+        public string Live_address { get; set; }
+        public string Work_address { get; set; }
+        public decimal Salary { get; set; }
+
+    }
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            CEO ceo = new CEO
+            {
+                Name = "Ali",
+                Surname = "Mammadov",
+                Age = 45,
+                Position = "CEO",
+                Salary = 5000
+            };
+
+            CLIENT client = new CLIENT
+            {
+                Name = "Murad",
+                Surname = "Aliyev",
+                Age = 30,
+                Live_address = "Baku",
+                Work_address = "Kapital Bank",
+                Salary = 2000
+            };
+
+            CREDIT credit = new CREDIT
+            {
+                Client = client,
+                Amount = 10000,
+                Percent = 10,
+                Months = 12
+            };
+
+            WORKER worker1 = new WORKER
+            {
+                Name = "Samir",
+                Surname = "Hasanov",
+                Salary = 1200
+            };
+
+            WORKER worker2 = new WORKER
+            {
+                Name = "Rashad",
+                Surname = "Kerimov",
+                Salary = 1500
+            };
+
+            MANAGER manager = new MANAGER
+            {
+                Name = "Nicat",
+                Surname = "Mammadli",
+                Salary = 2500
+            };
+
+            BANK bank = new BANK
+            {
+                Name = "My Bank",
+                Budget = 100000,
+                Ceo = ceo
+            };
+
+            bank.Workers.Add(worker1);
+            bank.Workers.Add(worker2);
+
+            bank.Managers.Add(manager);
+
+            bank.Clients.Add(client);
+
+            bank.Credits.Add(credit);
+
+            Console.WriteLine($"Bank profit: {bank.CalculateProfit()}");
+
+            bank.ShowAllCredit();
+
+            bank.PayCredit(client, 2000);
+
+            bank.ShowAllCredit();
+        }
+    }
+}

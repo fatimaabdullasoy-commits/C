@@ -1,0 +1,382 @@
+//BankCard (class)
+//Bankname
+//Fullname
+//PAN (kartin uzerindeki 16 reqemli kod) //string
+//PIN( karti bankamata daxil ederken yazdiginiz 4 reqemli kod) string
+//CVC(kartin arxasindaki 3 reqemli kod) / string 100-999(random)
+
+//Client (class)
+//id, name, surname, age, salary, BankCard bankAccount
+
+//Bank (class)
+//Clients[]
+//showCardBalance(BankCard)
+
+
+
+//using System;
+//using System.Xml.Linq;
+
+//Oxumali oldugunuz materiallar:
+//http://people.cs.aau.dk/~normark/oop-csharp/html/notes/exceptions-note-exception-hier-cs.html
+
+//https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/exceptions/compiler-generated-exceptions
+//ATM(bankomat) program:
+         
+
+//bu task da menim clientim menim userimdir   
+using System;
+using System.Collections.Generic;
+
+namespace HelloWorld
+{
+    class Program
+    {
+        //1.Card adinda bir class yaradirsiniz hansi ki, asagidaki fieldleri* var:
+
+        //   -PAN(kartin uzerindeki 16 reqemli kod) / string
+        //   - PIN(siniz karti bankamata daxil ederken yazdiginiz 4 reqemli kod) / string
+        //   - CVC(kartin arxasindaki 3 reqemli kod) / string
+        //   - Expire Date(month / year(kartin etibarlilib muddeti meselen(06 / 22))) / string, //ExpireDate (06/2023)
+        //   - balance / decimal
+        class Card
+        {
+            public string PAN { get; set; }
+            public string PIN { get; set; }
+            public string CVC { get; set; }
+            public string ExpireDate { get; set; }
+            public decimal Balance { get; set; }
+
+        }
+
+
+        //2.User adinda bir class yaradirsiniz hansi ki, asagidaki fieldleri var:
+
+        //   -Name / string
+        //   - Surname / string
+        //   - CreditCard / Card
+        class User
+        {
+            public string Name { get; set; }
+            public string Surname { get; set; }
+            public Card CreditCard { get; set; }
+        }
+
+        //history method ucun operation class
+        class Operation
+        {
+            public string OperationName { get; set; }
+            public decimal Amount { get; set; }
+            public DateTime Date { get; set; }
+        }
+
+        static void Main(string[] args)
+        {
+            //    4. Kartdan karta kocurme
+
+            //       4.1. Bu bolmenin secdiyiniz zaman hansi karta kocurme etmek istediyinizi sorusacaq (PIN i sorusaraq)
+
+            //   Eger daxil etdiyiniz PIN yoxdursa o zaman "bu PIN koda aid kart tapilmadi" yazilmalidir. Ve yeniden basa qayitmali ve sizden PIN kod daxil etmeyinizi istemelidir.
+
+            static void CartToCart( List<User> users, User currentUser, List<Operation> operations)
+            {
+                 
+                Console.Write("Kocurme etmek istediyiniz kartin PIN kodunu daxil et: ");
+                string pin = Console.ReadLine();
+
+                User targetUser = null;
+
+                foreach (var user in users)
+                {
+                    if (user.CreditCard.PIN == pin)
+                    {
+                        targetUser = user;
+                        break;
+                    }
+                }
+
+                if (targetUser == null)
+                {
+                    Console.WriteLine("Bu PIN koda aid kart tapilmadi!sehvdir");
+                    Console.ReadKey();
+                    return;
+                }
+                 
+                Console.Write("Kocurulecek meblegi daxil et: ");
+                decimal amount = Convert.ToDecimal(Console.ReadLine());
+
+                if (amount > currentUser.CreditCard.Balance)
+                {
+                    Console.WriteLine("balanceda yeterli qeder mebleg yoxdur!");
+                    Console.ReadKey();
+                    return;
+                }
+
+                currentUser.CreditCard.Balance -= amount;
+                targetUser.CreditCard.Balance += amount;
+
+                operations.Add(new Operation
+                {
+                    OperationName = "Kartdan karta kocurme",
+                    Amount = amount,
+                    Date = DateTime.Now
+                });
+
+                Console.WriteLine("Emeliyyat ugurla yerine yetirildi.");
+                Console.ReadKey();
+
+            }
+            //    3. Edilen emeliyyatlarin siyahisi.
+
+            //       3.1. Hansi vaxtda hansi emeliyyat yerine yetirildiyi haqqinda melumat.
+            //            - son 1,5,10 gun  
+            static void HistoryOfOperations(List<Operation> operations)
+            {
+                Console.Clear();
+
+                if (operations.Count == 0)
+                {
+                    Console.WriteLine("Emeliyyat tapilmadi.");
+                    Console.ReadKey();
+                    return;
+                }
+
+                Console.WriteLine("= operations =\n");
+
+                foreach (var operation in operations)
+                {
+                    Console.WriteLine($"Operation : {operation.OperationName}");
+                    Console.WriteLine($"Amount    : {operation.Amount} AZN");
+                    Console.WriteLine($"History     : {operation.Date}");
+                }
+
+                Console.ReadKey();
+            }
+            //     2.1. 1 secilen zaman kartdaki balancei gostermelidir
+            //     2.2. 2 seclien zaman:
+
+            //        1. 10 AZN
+            //        2. 20 AZN
+            //        3. 50 AZN
+            //        4. 100 AZN
+            //        5. Diger (Istediyi meblegi ozu qeyd ede biler)
+            //     2.3.Nezere alin ki, cixarmaq istediyiniz pul eger kartdaki balancedan coxdursa.Exception atmalidir ki "balanceda yeterli qeder mebleg yoxdur".
+            //     2.4 Eger yerli qeder mebleg varsa balancedan secilen qeder mebleg cixilmali ve proqram yeniden menyuya qayitmalidir. Men artiq bu sefer balance secende artiq balancedaki pulun azaldigini gormeliyem.
+            static void WithdrawMoney(User currentUser, List<Operation> operations)
+            {
+                Console.Clear();
+
+                Console.WriteLine("1. 10 AZN");
+                Console.WriteLine("2. 20 AZN");
+                Console.WriteLine("3. 50 AZN");
+                Console.WriteLine("4. 100 AZN");
+                Console.WriteLine("5. Diger");
+
+                int choice = Convert.ToInt32(Console.ReadLine());
+
+                decimal amount = 0;
+
+                switch (choice)
+                {
+                    case 1:
+                        amount = 10;
+                        break;
+
+                    case 2:
+                        amount = 20;
+                        break;
+
+                    case 3:
+                        amount = 50;
+                        break;
+
+                    case 4:
+                        amount = 100;
+                        break;
+
+                    case 5:
+                        Console.Write("Meblegi daxil et: ");
+                        amount = Convert.ToDecimal(Console.ReadLine());
+                        break;
+
+                    default:
+                        Console.WriteLine("Wrong choice");
+                        Console.ReadKey();
+                        return;
+                }
+
+                if (amount > currentUser.CreditCard.Balance)
+                {
+                    throw new Exception("balance de yeter qeder mebleg yoxdu");
+                }
+
+                currentUser.CreditCard.Balance -= amount;
+
+                operations.Add(new Operation
+                {
+                    OperationName = "Nagd pul cixarisi",
+                    Amount = amount,
+                    Date = DateTime.Now
+                });
+
+                Console.WriteLine($"{amount} AZN cixarildi");
+                Console.WriteLine($"Yeni balance: {currentUser.CreditCard.Balance} AZN");
+
+                Console.ReadKey();
+            }
+            //3.User massiv yaradirsiniz ve ora evvelceden 5 user yaradib elave edirsiniz. Kart melumatlarini ozunuz  elave edirsiniz.
+            //balance //random => istenilen
+            List<User> users = new List<User>()
+
+            {
+                new User
+                {
+                    Name = "Ali",
+                    Surname = "Mammadov",
+                    CreditCard = new Card
+                    {
+                        PAN = "1234567890123456",
+                        PIN = "1111",
+                        CVC = "123",
+                        ExpireDate = "06/28",
+                        Balance = 1000
+                    }
+                },
+
+                new User
+                {
+                    Name = "Veli",
+                    Surname = "Aliyev",
+                    CreditCard = new Card
+                    {
+                        PAN = "2222333344445555",
+                        PIN = "2222",
+                        CVC = "456",
+                        ExpireDate = "08/29",
+                        Balance = 2000
+                    }
+                },
+
+                new User
+                {
+                    Name = "Murad",
+                    Surname = "Huseynov",
+                    CreditCard = new Card
+                    {
+                        PAN = "3333444455556666",
+                        PIN = "3333",
+                        CVC = "789",
+                        ExpireDate = "10/27",
+                        Balance = 1500
+                    }
+                },
+
+                new User
+                {
+                    Name = "Rauf",
+                    Surname = "Quliyev",
+                    CreditCard = new Card
+                    {
+                        PAN = "4444555566667777",
+                        PIN = "4444",
+                        CVC = "321",
+                        ExpireDate = "12/30",
+                        Balance = 3000
+                    }
+                },
+
+                new User
+                {
+                    Name = "Nicat",
+                    Surname = "Kerimov",
+                    CreditCard = new Card
+                    {
+                        PAN = "5555666677778888",
+                        PIN = "5555",
+                        CVC = "654",
+                        ExpireDate = "05/31",
+                        Balance = 5000
+                    }
+                }
+            };
+
+            //4. Proqram ise dusen kimi sizden PIN daxil etmeyinizi teleb edecek. Eger daxil etdiyiniz PIN e uygun kart varsa  yazilacaq ki, "{Name} {Surname} xos gelmisiniz zehmet olmasa asagidakilardan birini secerdiniz". 
+
+            //    1. balance
+            //    2. Nagd pul
+            List<Operation> operations = new List<Operation>();
+            User currentUser = null;
+
+            while (currentUser == null)
+            {
+                Console.Write("PIN daxil et: ");
+                string pin = Console.ReadLine();
+
+                foreach (var user in users)
+                {
+                    if (user.CreditCard.PIN == pin)
+                    {
+                        currentUser = user;
+                        break;
+                    }
+                }
+
+                if (currentUser == null)
+                {
+                    Console.WriteLine("Bu PIN koda aid kart tapilmadi!");
+                }
+            }
+
+            while (true)
+            {
+                Console.Clear();
+
+                Console.WriteLine($"{currentUser.Name} {currentUser.Surname} xos gelmisiniz!");
+
+                Console.WriteLine("1. Balance");
+                Console.WriteLine("2. Nagd pul Withdraw");
+                Console.WriteLine("3. Cart to Cart");
+                Console.WriteLine("4. History");
+                Console.WriteLine("5. Exit");
+
+                int choice = int.Parse(Console.ReadLine());
+                
+                switch (choice)
+                {
+                    case 1:
+                        Console.WriteLine($"balance: {currentUser.CreditCard.Balance} AZN");
+                        Console.ReadKey();
+                        break;
+
+                    case 2:
+                        try
+                        {
+                            WithdrawMoney(currentUser, operations);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Console.ReadKey();
+                        }
+                        break;
+
+                    case 3:
+                        CartToCart(users, currentUser, operations);
+                        break;
+
+                    case 4:
+                        HistoryOfOperations(operations);
+                        break;
+
+                    case 5:
+                        return;
+
+                    default:
+                        Console.WriteLine("Yanlis secim!yeniden sina");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+    }
+}
